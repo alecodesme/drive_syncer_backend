@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Role;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
+
+use App\Models\Role;
+use App\Http\Requests\RoleCreateRequest;
+
 use Exception;
 
 
@@ -19,22 +22,10 @@ class RoleController extends Controller
         return $this->successResponse($roles);
     }
 
-    public function store(Request $request)
+    public function store(RoleCreateRequest $request)
     {
-        $request->validate([
-            'name' => 'required',
-        ]);
-    
-        $roleName = $request->input('name');
-    
-        $existingRole = Role::where('name', $roleName)->first();
-    
-        if ($existingRole) {
-            return $this->errorResponse('The role already exists', Response::HTTP_CONFLICT);
-        }
-    
         try {
-            $role = Role::create(['name' => $roleName]);
+            $role = Role::create(['name' => $request->get('name')]);
             return $this->successResponse($role, Response::HTTP_CREATED);
         } catch (Exception $exception) {
             return $this->errorResponse('Failed to create role', Response::HTTP_INTERNAL_SERVER_ERROR);
