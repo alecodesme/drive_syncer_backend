@@ -23,4 +23,6 @@ Route::prefix('roles')->group(function () {
 });
 Route::prefix('users')->group(function () {
     Route::post('/', [UserController::class, 'store']);
+    Route::get('/{id}', [UserController::class, 'show']);
+    Route::post('/{userId}/assign-role/{roleId}', [UserController::class, 'assignRole']);
 });

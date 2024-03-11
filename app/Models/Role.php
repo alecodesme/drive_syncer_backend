@@ -9,6 +9,8 @@ class Role extends Model
 {
     use HasFactory;
 
+    protected $hidden = ['pivot'];
+
     protected $fillable = [
         'name',
     ];
