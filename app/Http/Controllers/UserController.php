@@ -12,7 +12,6 @@ use App\Models\Role;
 
 use Exception;
 use Hash;
-use Request;
 
 class UserController extends Controller
 {

@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Http\Requests\Traits\HandlesValidationErrors;
+use Illuminate\Foundation\Http\FormRequest;
 
-class RoleCreateRequest extends FormRequest
+class CreateChildFolderRequest extends FormRequest
 {
     use HandlesValidationErrors;
     /**
@@ -24,15 +24,19 @@ class RoleCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|unique:roles',
+            'name' => 'required',
+            'status' => 'required',
+            'user_id' => 'required',
+            'parent_folder_id' => 'required'
         ];
     }
-
     public function messages(): array
     {
         return [
-            'name.required' => 'The name field is required.',
-            'name.unique' => 'The name already exists',
+            'name.required' => 'Name is required',
+            'status.required' => 'Status is required',
+            'user_id.requird' => 'User id is required',
+            'parent_folder_id' => 'Parent folder is required'
         ];
     }
 }

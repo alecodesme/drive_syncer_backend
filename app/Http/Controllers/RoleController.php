@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\Response;
 
 use App\Models\Role;
@@ -11,12 +9,9 @@ use App\Http\Requests\RoleCreateRequest;
 
 use Exception;
 
-
-
-
 class RoleController extends Controller
 {
-    public function index() 
+    public function index()
     {
         $roles = Role::all();
         return $this->successResponse($roles);

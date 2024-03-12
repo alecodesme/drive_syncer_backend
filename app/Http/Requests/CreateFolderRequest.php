@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Traits\HandlesValidationErrors;
 use Illuminate\Foundation\Http\FormRequest;
 
-class FolderCreateRequest extends FormRequest
+class CreateFolderRequest extends FormRequest
 {
+    use HandlesValidationErrors;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -32,7 +34,7 @@ class FolderCreateRequest extends FormRequest
         return [
             'name.required' => 'Name is required',
             'status.required' => 'Status is required',
-            'user_id.requird' => 'User is required'
+            'user_id.requird' => 'User id is required'
         ];
     }
 }
