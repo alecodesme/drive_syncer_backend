@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Response;
 
@@ -10,7 +11,8 @@ use App\Models\User;
 use App\Models\Role;
 
 use Exception;
-
+use Hash;
+use Request;
 
 class UserController extends Controller
 {
@@ -18,7 +20,9 @@ class UserController extends Controller
     {
         DB::beginTransaction();
         try {
-            $user = User::create($request->validated());
+            $validatedData = $request->validated();
+            $validatedData['password'] = Hash::make($validatedData['password']);
+            $user = User::create($validatedData);
             DB::commit();
             return $this->successResponse($user, Response::HTTP_CREATED);
         } catch (Exception $exception) {
@@ -34,19 +38,20 @@ class UserController extends Controller
             return $this->errorResponse("User not found", Response::HTTP_NOT_FOUND);
         }
 
-        return $this->successResponse($user, Response::HTTP_OK);
+        return $this->successResponse(['user' => $user, 'current' => auth('sanctum')->user()], Response::HTTP_OK);
     }
-    public function assignRole($userId, $roleId){
+    public function assignRole($userId, $roleId)
+    {
         DB::beginTransaction();
         try {
             $user = User::find($userId);
             $role = Role::find($roleId);
 
-            if(!$user){
+            if (!$user) {
                 return $this->errorResponse("User not found", Response::HTTP_NOT_FOUND);
             }
 
-            if(!$role){
+            if (!$role) {
                 return $this->errorResponse("Role not found", Response::HTTP_NOT_FOUND);
             }
 
@@ -57,6 +62,29 @@ class UserController extends Controller
             $user->roles()->attach($role);
             DB::commit();
             return $this->successResponse("Role assigned succesfully", Response::HTTP_CREATED);
+        } catch (Exception $exception) {
+            DB::rollback();
+            return $this->errorResponse($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function update(UpdateUserRequest $request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $user = User::find($id);
+            if (!$user) {
+                return $this->errorResponse("User not found", Response::HTTP_NOT_FOUND);
+            }
+
+            $validatedData = $request->validated();
+            unset($validatedData['password']);
+
+            $user->update($validatedData);
+
+            DB::commit();
+
+            return $this->successResponse($user, Response::HTTP_OK);
         } catch (Exception $exception) {
             DB::rollback();
             return $this->errorResponse($exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);

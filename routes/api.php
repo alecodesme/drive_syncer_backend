@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
@@ -20,9 +21,13 @@ use App\Http\Controllers\UserController;
 Route::prefix('roles')->group(function () {
     Route::get('/', [RoleController::class, 'index']);
     Route::post('/', [RoleController::class, 'store']);
+})->middleware('auth:sanctum');;
+Route::prefix('auth')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
 });
 Route::prefix('users')->group(function () {
     Route::post('/', [UserController::class, 'store']);
+    Route::put('/{id}', [UserController::class, 'update']);
     Route::get('/{id}', [UserController::class, 'show']);
     Route::post('/{userId}/assign-role/{roleId}', [UserController::class, 'assignRole']);
-});
+})->middleware('auth:sanctum');
