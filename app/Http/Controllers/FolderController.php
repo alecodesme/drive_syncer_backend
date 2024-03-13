@@ -39,17 +39,29 @@ class FolderController extends Controller
     }
     public function createChildFolder(CreateChildFolderRequest $request)
     {
+        DB::beginTransaction();
         try {
             $parentFolderId = Folder::find($request->get('parent_folder_id'));
+
+            $validatedData = $request->validated();
+
+            $existingFolder = Folder::where('name', $validatedData['name'])
+                ->whereNotNull('parent_folder_id')->first();
 
             if (!$parentFolderId) {
                 $this->errorResponse('Folder parent id not found', Response::HTTP_NOT_FOUND);
             }
 
-            $validatedData = $request->validated();
+            if ($existingFolder && $existingFolder->isChild()) {
+                $validatedData['name'] = $validatedData['name'] . ' Copy';
+            }
+
             $childFolder = Folder::create($validatedData);
+
+            DB::commit();
             return $this->successResponse($childFolder, Response::HTTP_CREATED);
         } catch (Exception $exception) {
+            DB::rollback();
             return $this->errorResponse('Failed to create child folder', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

@@ -16,4 +16,14 @@ class Folder extends Model
         'user_id',
         'parent_folder_id'
     ];
+
+    public function isChild(): bool
+    {
+        return $this->parent_folder_id !== null;
+    }
+
+    public function isParent(): bool
+    {
+        return $this->parent_folder_id == null;
+    }
 }
