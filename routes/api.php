@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\FolderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -40,3 +41,7 @@ Route::prefix('folders')->group(function () {
     Route::post('/', [FolderController::class, 'store']);
     Route::post('/create/child', [FolderController::class, 'createChildFolder']);
 })->middleware('auth:sanctum');
+
+Route::prefix('files')->group(function () {
+    Route::post('/', [FileController::class, 'store']);
+});
